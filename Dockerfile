@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y software-properties-common && \
     # install coreutils
     coreutils jq pv gcc g++ \
     # install encoding tools
-    ffmpeg aria2 curl gnupg2 wget \
+    aria2 curl gnupg2 wget \
     # miscellaneous
     neofetch python3-dev git bash build-essential nodejs npm ruby \
     python-minimal locales python-lxml gettext-base xz-utils \
@@ -31,8 +31,14 @@ ENV DEBIAN_FRONTEND noninteractive
 # sets the TimeZone, to be used inside the container
 ENV TZ Asia/Kolkata
 
-#rclone 
+# Rclone
 RUN curl https://rclone.org/install.sh | bash
+
+# FFmpeg
+RUN aria2c -x 10 https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz && \
+    tar xvf ffmpeg*.xz && \
+    cd ffmpeg-*-static && \
+    mv "${PWD}/ffmpeg" "${PWD}/ffprobe" /usr/local/bin/
 
 # add mkvtoolnix
 RUN wget -q -O - https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt | apt-key add - && \
@@ -59,7 +65,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copies config(if it exists)
 COPY . .
 
-RUN cp .up/dl .up/up .up/0 /usr/local/bin/ && chmod +x /usr/local/bin/dl /usr/local/bin/up /usr/local/bin/0
+RUN rm -rf ffmpeg*.xz ffmpeg-*-static && cp .up/dl .up/up .up/0 /usr/local/bin/ && chmod +x /usr/local/bin/dl /usr/local/bin/up /usr/local/bin/0
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -y nodejs && \
