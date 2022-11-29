@@ -1,0 +1,16 @@
+#!/bin/bash
+if
+[ "$1" == '' ]; then
+echo "Send a GDrive or Index Link With Command" 
+elif
+[[ "$1" =~ "drive.google.com/drive/folders" ]]; then
+gdown --folder --fuzzy "$1" 2>&1 | grep -oP '\/root\/\K.*?.*'
+elif
+[[ "$1" =~ "drive.google.com/folderview" ]]; then
+gdown --folder --fuzzy "$1" 2>&1 | grep -oP '\/root\/\K.*?.*'
+elif
+[[ "$1" =~ "drive.google.com" ]]; then
+gdown --fuzzy "$1" 2>&1 | grep -oP '\/root\/\K.*?.*'
+else
+aria2c -x 10 "$1" | grep -oP ': \/root\/\K.*?.*'
+fi
